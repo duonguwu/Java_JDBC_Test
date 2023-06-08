@@ -169,13 +169,39 @@ public class CTHDGUI extends JFrame {
                 // Xử lý logic khi nút Delete được nhấn
                 String maHD = maHDField.getText();
 
-                // Thực hiện xóa dữ liệu khỏi cơ sở dữ liệu
-                // ...
+                try {
+                    // Thiết lập kết nối đến cơ sở dữ liệu Oracle
+                    String jdbcURL = "jdbc:oracle:thin:@localhost:1521:ORCL";
+                    String username = "sinhvien01";
+                    String password = "duong2003";
+                    Connection connection = DriverManager.getConnection(jdbcURL, username, password);
 
-                // Sau khi xóa, cập nhật lại bảng hiển thị
-                // ...
+                    // Thực hiện câu lệnh SQL để xóa dữ liệu từ bảng CTHD
+                    String query = "DELETE FROM CTHD WHERE SOHD = ?";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setString(1, maHD);
+                    int rowsAffected = statement.executeUpdate();
+
+                    // Kiểm tra xem có dòng dữ liệu nào bị xóa hay không
+                    if (rowsAffected > 0) {
+                        // Xóa thành công, cập nhật lại bảng hiển thị
+                        updateTableData();
+                        JOptionPane.showMessageDialog(CTHDGUI.this, "Xóa thành công!");
+                    } else {
+                        // Không tìm thấy dữ liệu cần xóa
+                        JOptionPane.showMessageDialog(CTHDGUI.this, "Không tìm thấy dữ liệu cần xóa!");
+                    }
+
+                    // Đóng kết nối
+                    statement.close();
+                    connection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(CTHDGUI.this, "Lỗi khi xóa dữ liệu!");
+                }
             }
         });
+
 
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
